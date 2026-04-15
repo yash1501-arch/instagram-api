@@ -79,9 +79,39 @@ web: node server.js
 ---
 
 ### **Option C: Vercel**
-- **Cost**: Free tier available
-- **Setup time**: 3 minutes
-- **Note**: Better for serverless functions (not ideal for long-running servers)
+- **Cost**: Free tier available, then $20+/month for Pro
+- **Setup time**: 5 minutes
+- **Best for**: Serverless APIs, but has limitations for scraping
+- **⚠️ Important**: Vercel functions have a 10-second cold start and 15-minute timeout. Instagram scraping may exceed these limits.
+
+**Steps:**
+1. Go to [vercel.com](https://vercel.com)
+2. Sign up with GitHub
+3. Click "New Project" → "Import Git Repository"
+4. Select your instagram-api repository
+5. Configure:
+   - Framework Preset: `Other`
+   - Root Directory: `./` (leave default)
+   - Build Command: `npm run build` (but we don't need build)
+   - Output Directory: `./` (leave default)
+6. Add environment variables in "Environment Variables" tab:
+   - `MONGODB_URI`
+   - `REDIS_URL`
+   - `IG_SESSIONID`
+   - `IG_CSRFTOKEN`
+   - `IG_DS_USER_ID`
+   - `NODE_ENV=production`
+7. Deploy!
+
+**Your URL will be**: `https://instagram-api-xxx.vercel.app`
+
+**⚠️ Vercel Limitations for This API:**
+- **Cold Starts**: First request after inactivity takes 1-10 seconds
+- **Timeout**: Functions timeout after 15 minutes (scraping may fail)
+- **No Persistent Connections**: Can't maintain database connections between requests
+- **File System**: Limited write access (Redis recommended over file caching)
+
+**Recommendation**: Use Vercel only for testing. For production scraping API, use Railway or paid Render instead.
 
 ---
 
@@ -150,9 +180,7 @@ curl "$BASE_URL/api/analytics/instagram"
 ### **Fill API Details:**
 ```
 API Name:           Instagram Analytics API
-Description:        Get detailed Instagram analytics including followers, 
-                   engagement rates, post metrics, growth predictions, and 
-                   audience demographics
+Description:        Get detailed Instagram analytics including followers, engagement rates, post metrics, growth predictions, and audience demographics
 
 Category:           Social Media
 Base URL:           https://your-api-url.railway.app/api
